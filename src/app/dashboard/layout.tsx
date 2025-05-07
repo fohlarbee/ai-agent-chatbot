@@ -1,7 +1,6 @@
 "use client"
 
 import { Authenticated } from 'convex/react'
-import { HeartPulse } from 'lucide-react'
 import React from 'react'
 import Header from '../_components/Header'
 import { NavigationProvider } from '@/lib/Providers/NavigationProvider'

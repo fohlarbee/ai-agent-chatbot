@@ -7,8 +7,7 @@ import {
   StreamMessageType,
 } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
-import { start } from "repl";
+import { NextRequest } from "next/server";
 import { api } from "../../../../../convex/_generated/api";
 import { AIMessage, HumanMessage, ToolMessage } from "@langchain/core/messages";
 import { submitQuestion } from "@/lib/langgraph";
@@ -137,5 +136,7 @@ export async function POST(req: NextRequest) {
     await startStream();
 
     return res;
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error in POST handler:", error);
+  }
 }

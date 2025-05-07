@@ -1,6 +1,5 @@
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { ArrowRightIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 const features = [
