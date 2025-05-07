@@ -1,5 +1,6 @@
 import { ChatAnthropic } from "@langchain/anthropic";
-import {ChatCohere} from "@langchain/cohere";
+import {ChatCohere, } from "@langchain/cohere";
+import {ChatGoogleGenerativeAI} from '@langchain/google-genai'
 import {ToolNode} from "@langchain/langgraph/prebuilt";
 import wxflows from "@wxflows/sdk/langchain";
 import {
@@ -46,40 +47,42 @@ const toolClient = new wxflows({
   const tools = await toolClient.lcTools;
   const toolNode = new ToolNode(tools);
 const initialModel = () => {
-    const model = new ChatCohere({
-        model:"command-a-03-2025",
+    const model = new ChatGoogleGenerativeAI({
+        // model:"command-r-plus-08-2024",
+        model:'',
+        
         apiKey: process.env.COHERE_API_KEY,
         temperature: 0.7,
         streaming:true,
-        maxConcurrency:4096,
+        // maxConcurrency:4096,
         cache:true,
     
-        callbacks: [
-            {
-              handleLLMStart: async () => {
-                // console.log("🤖 Starting LLM call");
-              },
-              handleLLMEnd: async (output) => {
-                console.log("🤖 End LLM call", output);
-                const usage = output.llmOutput?.usage;
-                if (usage) {
-                  // console.log("📊 Token Usage:", {
-                  //   input_tokens: usage.input_tokens,
-                  //   output_tokens: usage.output_tokens,
-                  //   total_tokens: usage.input_tokens + usage.output_tokens,
-                  //   cache_creation_input_tokens:
-                  //     usage.cache_creation_input_tokens || 0,
-                  //   cache_read_input_tokens: usage.cache_read_input_tokens || 0,
-                  // });
-                }
-              },
-              // handleLLMNewToken: async (token: string) => {
-              //   // console.log("🔤 New token:", token);
-              // },
-            },
-          ],
+        // callbacks: [
+        //     {
+        //       handleLLMStart: async () => {
+        //         // console.log("🤖 Starting LLM call");
+        //       },
+        //       handleLLMEnd: async (output) => {
+        //         console.log("🤖 End LLM call", output);
+        //         const usage = output.llmOutput?.usage;
+        //         if (usage) {
+        //           console.log("📊 Token Usage:", {
+        //             input_tokens: usage.input_tokens,
+        //             output_tokens: usage.output_tokens,
+        //             total_tokens: usage.input_tokens + usage.output_tokens,
+        //             cache_creation_input_tokens:
+        //               usage.cache_creation_input_tokens || 0,
+        //             cache_read_input_tokens: usage.cache_read_input_tokens || 0,
+        //           });
+        //         }
+        //       },
+        //       handleLLMNewToken: async (token: string) => {
+        //         // console.log("🔤 New token:", token);
+        //       },
+        //     },
+        //   ],
     }).bindTools(tools);
-
+    console.log("🤖 Model initialized:", model);
     return model;
 };  
 
@@ -105,6 +108,7 @@ function shouldContinue(state: typeof MessagesAnnotation.State) {
 
 const createWorkflow = () => {
   const model = initialModel();
+  console.log("🤖 Model initialized:", model);
   const stateGraph = new StateGraph(MessagesAnnotation).addNode(
     "agent",
     async (state) => {
@@ -129,6 +133,7 @@ const createWorkflow = () => {
 
       // Get response from the model
       const response = await model.invoke(prompt);
+      console.log("🤖 Model response:", response);
 
       return { messages: [response] };
     }
